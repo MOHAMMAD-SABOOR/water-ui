@@ -357,14 +357,21 @@ async function submitForm() {
     ip = Math.random().toString(36).substring(2, 10);
   }
 
-  google.script.run
-    .withSuccessHandler(handleResponse)
-    .withFailureHandler(() => {
-      showMessage("Please try again in a moment");
-      isSubmitting = false;
-      btn.disabled = false;
-    })
-    .verifyBatch(code, ip, device, trap); // ✅ call the wrapper function
+  const API_URL = "https://script.google.com/macros/s/AKfycbxnH2Y1FQVFRDdlDoYy6x0k3xhM03e8KhR3foBv6O8rkbM_XbIZq3EgsnUAXW_5A8xN/exec";
+
+  try {
+    const response = await fetch(
+      `${API_URL}?action=verify&batch=${code}&ip=${ip}&device=${encodeURIComponent(device)}&trap=${trap}`
+    );
+
+    const data = await response.json();
+    handleResponse(data);
+
+  } catch (err) {
+    showMessage("Please try again in a moment");
+    isSubmitting = false;
+    btn.disabled = false;
+  }
 }
 
 // =======================
@@ -452,23 +459,6 @@ function formatCode(input) {
 
 }
 
-// 🚀 BREAK OUT OF APPS SCRIPT CONTAINER
-(function() {
-  const body = document.body;
-  const html = document.documentElement;
-
-  body.style.maxWidth = "100vw";
-  body.style.margin = "0";
-  body.style.padding = "0";
-
-  html.style.maxWidth = "100vw";
-
-  // Remove parent wrapper effect
-  if (body.parentElement) {
-    body.parentElement.style.maxWidth = "100vw";
-    body.parentElement.style.margin = "0";
-  }
-})();
 
 </script>
 
