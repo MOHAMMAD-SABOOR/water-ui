@@ -346,8 +346,8 @@
         </div>
       </div>
     
-
 <script>
+
 
 window.onerror = function(msg, url, line, col, error) {
   const errorDiv = document.createElement('div');
@@ -425,6 +425,9 @@ async function submitForm() {
   const device = navigator.userAgent + "|" + 
     (window.innerWidth || 0) + "x" + (window.innerHeight || 0);
   
+  if (code.length !== 8) {
+    showMessage("Enter a valid 8-character code");
+
     // enable
     isSubmitting = false;
     btn.disabled = false;
@@ -531,9 +534,9 @@ function handleResponse(res) {
       </div>
     `;
 
-    // wait for animation, then open viewer
+    // wait for animation, then redirect
     setTimeout(() => {
-      window.location.href = res.url;  // res.url already points to servePDF with token
+      window.location.href = res.url;
     }, 1200);
 
     return;
@@ -580,6 +583,7 @@ function formatCode(input) {
   }
 
 }
+
 
 </script>
 
