@@ -373,6 +373,7 @@ function validate(code) {
   if (!code || code.length !== 8) {
     input.classList.add("error");   // ADD THIS
     showMessage("Enter a valid 8-character code");
+    input.focus();
     return false;
   }
 
@@ -390,19 +391,15 @@ function showMessage(text, isError = true) {
   msg.innerHTML = text;
 }
 
-// =======================
-// GET IP (SAFE VERSION)
-// =======================
 
-async function getIP() {
-  try {
-    const res = await fetch("https://api.ipify.org?format=json");
-    const data = await res.json();
-    return data.ip;
-  } catch (e) {
-    return "0.0.0.0"; // fallback
-  }
+function fetchWithTimeout(url, timeout = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  return fetch(url, { signal: controller.signal })
+    .finally(() => clearTimeout(timer));
 }
+
 
 // =======================
 // SUBMIT
@@ -418,12 +415,9 @@ async function submitForm() {
   btn.disabled = true;
     
   const code = document.getElementById("code").value.replace(/\s/g, "").toUpperCase();
-  const trap = document.getElementById("trap").value;
 
   document.getElementById("code").blur();
 
-  const device = navigator.userAgent + "|" + 
-    (window.innerWidth || 0) + "x" + (window.innerHeight || 0);
   
   if (code.length !== 8) {
     showMessage("Enter a valid 8-character code");
@@ -457,26 +451,32 @@ async function submitForm() {
     </div>
   `;
 
-  let ip = await getIP();
 
-  if (!ip || ip === "0.0.0.0") {
-    ip = Math.random().toString(36).substring(2, 10);
-  }
-
-  const API_URL = "https://script.google.com/macros/s/AKfycbxnH2Y1FQVFRDdlDoYy6x0k3xhM03e8KhR3foBv6O8rkbM_XbIZq3EgsnUAXW_5A8xN/exec";
+  const API_URL = "https://d5iz7dzov2.execute-api.us-east-1.amazonaws.com/prod/get-pdf";
 
   try {
-    const response = await fetch(
-      `${API_URL}?action=verify&batch=${code}&ip=${ip}&device=${encodeURIComponent(device)}&trap=${trap}`
-    );
+    // STEP 1: Get token
+    const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}`);
+    const data1 = await response1.json();
 
-    const data = await response.json();
-    handleResponse(data);
+    // handle errors from step 1
+    if (data1.status !== "SUCCESS") {
+      handleResponse(data1);
+      return;
+    }
+
+    // STEP 2: Use token to get URL
+    const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`);
+    const data2 = await response2.json();
+    
+    // final handling
+    handleResponse(data2);
 
   } catch (err) {
     showMessage("Please try again in a moment");
     isSubmitting = false;
     btn.disabled = false;
+    document.getElementById("code").focus();
   }
 }
 
@@ -495,9 +495,15 @@ function handleResponse(res) {
     return;
   }
 
-  if (res.status === "LIMIT_EXCEEDED") {
+  if (res.status === "IP_RATE_LIMIT") {
     btn.disabled = false;
-    showMessage("Too many attempts");
+    showMessage("Too many requests from this device. Please try again later.");
+    return;
+  }
+
+  if (res.status === "UID_RATE_LIMIT") {
+    btn.disabled = false;
+    showMessage("This code has been checked too many times. Please try again later.");
     return;
   }
 
@@ -545,6 +551,12 @@ function handleResponse(res) {
   if (res.status === "INVALID") {
     btn.disabled = false;
     showMessage("Enter a valid 8-character code");
+    return;
+  }
+
+  if (res.status === "EXPIRED") {
+    btn.disabled = false;
+    showMessage("Session expired. Please scan again.");
     return;
   }
 
