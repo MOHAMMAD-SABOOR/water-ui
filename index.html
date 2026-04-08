@@ -406,42 +406,27 @@ function fetchWithTimeout(url, timeout = 5000) {
 // =======================
 
 async function submitForm() {
-
   const btn = document.getElementById("submitBtn");
-
-  if (btn.disabled || isSubmitting) return;
-
-  isSubmitting = true;
-  btn.disabled = true;
-    
-  const code = document.getElementById("code").value.replace(/\s/g, "").toUpperCase();
-
-  document.getElementById("code").blur();
-
-  
-  if (code.length !== 8) {
-    showMessage("Enter a valid 8-character code");
-
-    // enable
-    isSubmitting = false;
-    btn.disabled = false;
-    return;
-  }
-
-  if (!validate(code)) {
-
-    // enable
-    isSubmitting = false;
-    btn.disabled = false;
-    return;
-  }
-
+  const input = document.getElementById("code");
   const msg = document.getElementById("msg");
 
-  // ✅ RESET COLOR CLASS
-  msg.className = "";
+  if (btn.disabled || isSubmitting) return;
+  isSubmitting = true;
+  btn.disabled = true;
 
-  // ✅ SET LOADER
+  const code = input.value.replace(/\s/g, "").toUpperCase();
+  input.blur();
+
+  // Validation
+  if (code.length !== 8 || !validate(code)) {
+    showMessage("Enter a valid 8-character code", true);
+    isSubmitting = false;
+    btn.disabled = false;
+    return;
+  }
+
+  // Show loader
+  msg.className = "";
   msg.innerHTML = `
     <div class="premium-loader">
       <span>Verifying</span>
@@ -451,45 +436,63 @@ async function submitForm() {
     </div>
   `;
 
-
-  const API_URL = "https://d5iz7dzov2.execute-api.us-east-1.amazonaws.com/prod/get-pdf";
+  const API_URL = "https://d5iz7dzov2.execute-api.us-east-1.amazonaws.com/prod/get-report";
 
   try {
     // STEP 1: Get token
-    const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}`);
+    const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}`, 10000);
     const data1 = await response1.json();
 
-    // handle errors from step 1
     if (data1.status !== "SUCCESS") {
       handleResponse(data1);
+      isSubmitting = false;
+      btn.disabled = false;
+      input.focus();
       return;
     }
 
-    // STEP 2: Use token to get URL
-    const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`);
+    // STEP 2: Get signed PDF URL
+    const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 10000);
     const data2 = await response2.json();
-    
-    // final handling
-    handleResponse(data2);
 
-    } catch (err) {
-    const msg = document.getElementById("msg");
+    handleResponse(data2); // success or error handled here
+
+  } catch (err) {
     msg.className = "error";
-    
+
     if (err.name === "AbortError") {
       msg.innerHTML = "Request timed out. Please try again.";
-    } else if (err.message.startsWith("HTTP")) {
-      msg.innerHTML = `Server returned ${err.message}. Try again later.`;
     } else {
       msg.innerHTML = "Network error. Please check your connection.";
     }
 
     console.error("Submit error:", err);
-
+  } finally {
+    // Always re-enable button & reset submitting flag
     isSubmitting = false;
     btn.disabled = false;
-    document.getElementById("code").focus();
+    input.focus();
   }
+}
+
+// Helper: fetch with timeout
+async function fetchWithTimeout(url, timeout = 10000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+// Helper: show messages
+function showMessage(text, isError = false) {
+  const msg = document.getElementById("msg");
+  msg.className = isError ? "error" : "";
+  msg.innerText = text;
 }
 
 // =======================
