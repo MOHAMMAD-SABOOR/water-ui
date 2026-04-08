@@ -472,8 +472,20 @@ async function submitForm() {
     // final handling
     handleResponse(data2);
 
-  } catch (err) {
-    showMessage("Please try again in a moment");
+    } catch (err) {
+    const msg = document.getElementById("msg");
+    msg.className = "error";
+    
+    if (err.name === "AbortError") {
+      msg.innerHTML = "Request timed out. Please try again.";
+    } else if (err.message.startsWith("HTTP")) {
+      msg.innerHTML = `Server returned ${err.message}. Try again later.`;
+    } else {
+      msg.innerHTML = "Network error. Please check your connection.";
+    }
+
+    console.error("Submit error:", err);
+
     isSubmitting = false;
     btn.disabled = false;
     document.getElementById("code").focus();
