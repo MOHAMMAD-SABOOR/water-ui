@@ -392,14 +392,6 @@ function showMessage(text, isError = true) {
 }
 
 
-function fetchWithTimeout(url, timeout = 5000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
-
-  return fetch(url, { signal: controller.signal })
-    .finally(() => clearTimeout(timer));
-}
-
 
 // =======================
 // SUBMIT
@@ -441,6 +433,9 @@ async function submitForm() {
   try {
     // STEP 1: Get token
     const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}`, 10000);
+      if (!response1.ok) {
+        throw new Error("UID_REQUEST_FAILED");
+      }
     const data1 = await response1.json();
 
     if (data1.status !== "SUCCESS") {
@@ -452,8 +447,11 @@ async function submitForm() {
     }
 
     // STEP 2: Get signed PDF URL
-    const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 10000);
-    const data2 = await response2.json();
+   const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 10000);
+      if (!response2.ok) {
+        throw new Error("TOKEN_REQUEST_FAILED");
+      }
+  const data2 = await response2.json();
 
     handleResponse(data2); // success or error handled here
 
@@ -461,10 +459,14 @@ async function submitForm() {
     msg.className = "error";
 
     if (err.name === "AbortError") {
-      msg.innerHTML = "Request timed out. Please try again.";
-    } else {
-      msg.innerHTML = "Network error. Please check your connection.";
-    }
+  msg.innerHTML = "Request timed out. Please try again.";
+} else if (err.message === "UID_REQUEST_FAILED") {
+  msg.innerHTML = "Invalid code or server error.";
+} else if (err.message === "TOKEN_REQUEST_FAILED") {
+  msg.innerHTML = "Session failed. Please try again.";
+} else {
+  msg.innerHTML = "Network error. Please check your connection.";
+}
 
     console.error("Submit error:", err);
   } finally {
@@ -481,19 +483,12 @@ async function fetchWithTimeout(url, timeout = 10000) {
   const id = setTimeout(() => controller.abort(), timeout);
   try {
     const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response;
   } finally {
     clearTimeout(id);
   }
 }
 
-// Helper: show messages
-function showMessage(text, isError = false) {
-  const msg = document.getElementById("msg");
-  msg.className = isError ? "error" : "";
-  msg.innerText = text;
-}
 
 // =======================
 // RESPONSE
@@ -510,9 +505,9 @@ function handleResponse(res) {
     return;
   }
 
-  if (res.status === "IP_RATE_LIMIT") {
+  if (res.status === "SYSTEM_BUSY") {
     btn.disabled = false;
-    showMessage("Too many requests from this device. Please try again later.");
+    showMessage("High demand right now. Please try again in a few minutes.");
     return;
   }
 
