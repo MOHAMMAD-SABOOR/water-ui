@@ -410,8 +410,7 @@ async function submitForm() {
   input.blur();
 
   // Validation
-  if (!validate(code)) return; {
-    showMessage("Enter a valid 8-character code", true);
+  if (!validate(code)) {
     isSubmitting = false;
     btn.disabled = false;
     return;
