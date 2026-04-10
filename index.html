@@ -333,7 +333,7 @@
       oninput="formatCode(this)">
       
     
-    <input type="text" id="trap" style="display:none">
+    <input type="text" id="trap" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;">
 
     <button id="submitBtn" onclick="submitForm()">View Lab Report</button>
 
@@ -410,7 +410,7 @@ async function submitForm() {
   input.blur();
 
   // Validation
-  if (code.length !== 8 || !validate(code)) {
+  if (!validate(code)) return; {
     showMessage("Enter a valid 8-character code", true);
     isSubmitting = false;
     btn.disabled = false;
@@ -432,7 +432,8 @@ async function submitForm() {
 
   try {
     // STEP 1: Get token
-    const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}`, 10000);
+    const trap = document.getElementById("trap").value;
+    const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}&trap=${trap}`, 7000);
       if (!response1.ok) {
         throw new Error("UID_REQUEST_FAILED");
       }
@@ -447,7 +448,7 @@ async function submitForm() {
     }
 
     // STEP 2: Get signed PDF URL
-   const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 10000);
+   const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 7000);
       if (!response2.ok) {
         throw new Error("TOKEN_REQUEST_FAILED");
       }
@@ -478,7 +479,7 @@ async function submitForm() {
 }
 
 // Helper: fetch with timeout
-async function fetchWithTimeout(url, timeout = 10000) {
+async function fetchWithTimeout(url, timeout = 7000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   try {
@@ -552,7 +553,8 @@ function handleResponse(res) {
 
     // wait for animation, then redirect
     setTimeout(() => {
-      window.location.href = res.url;
+      window.location.replace(res.url);
+      btn.disabled = false;
     }, 1200);
 
     return;
