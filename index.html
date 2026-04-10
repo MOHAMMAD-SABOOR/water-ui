@@ -433,10 +433,12 @@ async function submitForm() {
     // STEP 1: Get token
     const trap = document.getElementById("trap").value;
     const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}&trap=${trap}`, 7000);
+      const data1 = await response1.json();
+
       if (!response1.ok) {
-        throw new Error("UID_REQUEST_FAILED");
+        handleResponse(data1);
+        return;
       }
-    const data1 = await response1.json();
 
     if (data1.status !== "SUCCESS") {
       handleResponse(data1);
@@ -447,13 +449,39 @@ async function submitForm() {
     }
 
     // STEP 2: Get signed PDF URL
-   const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 7000);
-      if (!response2.ok) {
-        throw new Error("TOKEN_REQUEST_FAILED");
-      }
-  const data2 = await response2.json();
+    const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 7000);
 
-    handleResponse(data2); // success or error handled here
+    console.log("STEP 2 STATUS:", response2.status);
+
+    // 🔥 read raw first (prevents crash)
+    const raw2 = await response2.text();
+    console.log("RAW STEP 2:", raw2);
+
+    let data2;
+    try {
+      data2 = JSON.parse(raw2);
+    } catch (e) {
+      console.error("JSON parse failed:", e);
+      showMessage("Invalid server response");
+      return;
+    }
+
+    console.log("PARSED STEP 2:", data2);
+
+    // handle non-200
+    if (!response2.ok) {
+      handleResponse(data2);
+      return;
+    }
+
+    // 🔥 SAFETY CHECK (VERY IMPORTANT)
+    if (!data2.url) {
+      console.error("Missing URL in response:", data2);
+      showMessage("Session failed. Please try again.");
+      return;
+    }
+
+    handleResponse(data2);
 
   } catch (err) {
     msg.className = "error";
