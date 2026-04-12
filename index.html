@@ -12,6 +12,7 @@
 
     html {
       font-size: 16px;
+      scroll-behavior: smooth;
     }
 
     html, body {
@@ -19,7 +20,8 @@
       padding: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      overflow-x: hidden !important;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: #f5f7fa;
       transition: all 0.25s ease;
     }
@@ -29,16 +31,23 @@
       padding: 0 16px;
       background: linear-gradient(180deg, #f5f7fa 0%, #eaf2fb 100%);
 
-      position: relative;
-      min-height: 100dvh;
+      min-height: 100vh;
+      padding-top: 60px;
+      padding-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       height: 100vh;
     }
 
     .container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      margin-top: 10vh;
+      margin-bottom: 10vh;
+      padding: 0 16px;
       width: 100%;
       max-width: 420px;
       padding: 0 16px;
@@ -313,11 +322,6 @@
 
     @keyframes draw {
       to { opacity: 1; }
-    }
-    
-    body.keyboard-open .container {
-      top: 40%;
-      transform: translate(-50%, -40%);
     }
 
   </style>
@@ -658,12 +662,11 @@ function formatCode(input) {
   const inputField = document.getElementById("code");
 
   inputField.addEventListener("focus", () => {
-    document.body.classList.add("keyboard-open");
+    setTimeout(() => {
+      inputField.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
   });
 
-  inputField.addEventListener("blur", () => {
-    document.body.classList.remove("keyboard-open");
-  });
 
 </script>
 
