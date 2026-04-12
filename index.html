@@ -662,10 +662,19 @@ function formatCode(input) {
   const inputField = document.getElementById("code");
 
   inputField.addEventListener("focus", () => {
-    setTimeout(() => {
-      inputField.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 300);
-  });
+
+  // Step 1: force slight reset (breaks browser "already visible" logic)
+  window.scrollBy(0, -1);
+
+  // Step 2: always bring to correct position
+  setTimeout(() => {
+    inputField.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }, 250);
+
+});
 
 
 </script>
