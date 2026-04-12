@@ -21,6 +21,7 @@
       height: 100% !important;
       overflow-x: hidden !important;
       background: #f5f7fa;
+      transition: all 0.25s ease;
     }
 
     body {
@@ -30,8 +31,7 @@
 
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding-top: 60px;
+      align-items: center;
       min-height: 100dvh;
     }
 
@@ -313,7 +313,8 @@
     }
     
     body.keyboard-open {
-      padding-top: 20px;
+      align-items: flex-start;
+      padding-top: 40px;
     }
 
   </style>
@@ -421,6 +422,8 @@ async function submitForm() {
 
   const code = input.value.replace(/\s/g, "").toUpperCase();
   input.blur();
+  
+  document.body.classList.remove("keyboard-open");
 
   // Validation
   if (!validate(code)) {
