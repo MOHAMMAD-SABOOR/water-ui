@@ -659,22 +659,30 @@ function formatCode(input) {
 
 }
 
+  function bringCardIntoView() {
+    const card = document.querySelector(".card");
+
+    const rect = card.getBoundingClientRect();
+    const isVisible = rect.top >= 20 && rect.bottom <= window.innerHeight;
+
+    if (!isVisible) {
+      card.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  }
+
   const inputField = document.getElementById("code");
 
   inputField.addEventListener("focus", () => {
+    document.body.classList.add("input-active");
+    bringCardIntoView();
+  });
 
-  // Step 1: force slight reset (breaks browser "already visible" logic)
-  window.scrollBy(0, -1);
-
-  // Step 2: always bring to correct position
-  setTimeout(() => {
-    inputField.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }, 250);
-
-});
+  inputField.addEventListener("blur", () => {
+    document.body.classList.remove("input-active");
+  });
 
 
 </script>
