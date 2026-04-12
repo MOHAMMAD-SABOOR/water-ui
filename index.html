@@ -30,7 +30,8 @@
 
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
+      padding-top: 60px;
       min-height: 100dvh;
     }
 
@@ -310,6 +311,10 @@
     @keyframes draw {
       to { opacity: 1; }
     }
+    
+    body.keyboard-open {
+      padding-top: 20px;
+    }
 
   </style>
 </head>
@@ -401,6 +406,14 @@ async function submitForm() {
   const btn = document.getElementById("submitBtn");
   const input = document.getElementById("code");
   const msg = document.getElementById("msg");
+
+  const sound = document.getElementById("successSound");
+  if (sound) {
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+    }).catch(() => {});
+  }
 
   if (btn.disabled || isSubmitting) return;
   isSubmitting = true;
@@ -501,7 +514,6 @@ async function submitForm() {
     // Always re-enable button & reset submitting flag
     isSubmitting = false;
     btn.disabled = false;
-    input.focus();
   }
 }
 
@@ -553,6 +565,8 @@ function handleResponse(res) {
 
   // SUCCESS BLOCK (mobile-safe)
   if (res.status === "SUCCESS") {
+
+    document.getElementById("code").blur();
 
     const msg = document.getElementById("msg");
     
@@ -635,6 +649,15 @@ function formatCode(input) {
 
 }
 
+  const inputField = document.getElementById("code");
+
+  inputField.addEventListener("focus", () => {
+    document.body.classList.add("keyboard-open");
+  });
+
+  inputField.addEventListener("blur", () => {
+    document.body.classList.remove("keyboard-open");
+  });
 
 </script>
 
