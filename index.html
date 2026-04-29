@@ -12,6 +12,7 @@
 
     html {
       font-size: 16px;
+      scroll-behavior: smooth;
     }
 
     html, body {
@@ -19,26 +20,38 @@
       padding: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      overflow-x: hidden !important;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: #f5f7fa;
+      transition: all 0.25s ease;
     }
 
     body {
       margin: 0;
-      padding: 24px 16px;
+      padding: 0 16px;
       background: linear-gradient(180deg, #f5f7fa 0%, #eaf2fb 100%);
 
+      min-height: 100vh;
+      padding-top: 60px;
+      padding-bottom: 40px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      min-height: 100dvh;
+      justify-content: center;
+      height: 100vh;
     }
 
     .container {
       width: 100%;
       max-width: 420px;
-      margin-top: clamp(10px, 5vh, 40px);
+      margin: 0 auto;
+      margin-top: 10vh;
+      margin-bottom: 10vh;
       padding: 0 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 0 16px;
+      transition: top 0.25s ease, transform 0.25s ease;
     }
 
     @media (max-width: 480px) {
@@ -67,11 +80,11 @@
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(10px) scale(0.98);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
@@ -362,7 +375,6 @@ window.onerror = function(msg, url, line, col, error) {
 };
 
 let isSubmitting = false;
-let isSuccessFlow = false;
 
 // =======================
 // VALIDATION
@@ -403,9 +415,8 @@ async function submitForm() {
   const input = document.getElementById("code");
   const msg = document.getElementById("msg");
 
-  // unlock sound FIRST (user interaction)
-const sound = document.getElementById("successSound");
-if (sound) {
+  const sound = document.getElementById("successSound");
+  if (sound) {
     sound.play().then(() => {
       sound.pause();
       sound.currentTime = 0;
@@ -413,13 +424,13 @@ if (sound) {
   }
 
   if (btn.disabled || isSubmitting) return;
-
-  isSuccessFlow = false;
   isSubmitting = true;
   btn.disabled = true;
 
   const code = input.value.replace(/\s/g, "").toUpperCase();
   input.blur();
+  
+  document.body.classList.remove("keyboard-open");
 
   // Validation
   if (!validate(code)) {
@@ -510,11 +521,10 @@ if (sound) {
 
     console.error("Submit error:", err);
   } finally {
-  if (!isSuccessFlow) {
+    // Always re-enable button & reset submitting flag
     isSubmitting = false;
     btn.disabled = false;
   }
-}
 }
 
 // Helper: fetch with timeout
@@ -565,8 +575,8 @@ function handleResponse(res) {
 
   // SUCCESS BLOCK (mobile-safe)
   if (res.status === "SUCCESS") {
+
     document.getElementById("code").blur();
-    isSuccessFlow = true;
 
     const msg = document.getElementById("msg");
     
@@ -595,6 +605,7 @@ function handleResponse(res) {
     // wait for animation, then redirect
     setTimeout(() => {
       window.location.replace(res.url);
+      btn.disabled = false;
     }, 1200);
 
     return;
@@ -603,7 +614,6 @@ function handleResponse(res) {
   if (res.status === "INVALID") {
     btn.disabled = false;
     showMessage("Enter a valid 8-character code");
-    document.getElementById("code").focus();
     return;
   }
 
@@ -649,28 +659,31 @@ function formatCode(input) {
 
 }
 
-function bringCardIntoView() {
-  const card = document.querySelector(".card");
+  function bringCardIntoView() {
+    const card = document.querySelector(".card");
 
-  card.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-  });
-}
+    const rect = card.getBoundingClientRect();
+    const isVisible = rect.top >= 20 && rect.bottom <= window.innerHeight;
 
-const inputField = document.getElementById("code");
+    if (!isVisible) {
+      card.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  }
 
-inputField.addEventListener("focus", () => {
-  document.body.classList.add("input-active");
+  const inputField = document.getElementById("code");
 
-  setTimeout(() => {
+  inputField.addEventListener("focus", () => {
+    document.body.classList.add("input-active");
     bringCardIntoView();
-  }, 300);
-});
+  });
 
-inputField.addEventListener("blur", () => {
-  document.body.classList.remove("input-active");
-});
+  inputField.addEventListener("blur", () => {
+    document.body.classList.remove("input-active");
+  });
+
 
 </script>
 
