@@ -12,7 +12,6 @@
 
     html {
       font-size: 16px;
-      scroll-behavior: smooth;
     }
 
     html, body {
@@ -20,26 +19,26 @@
       padding: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      overflow-x: hidden;
-      overflow-y: auto;
+      overflow-x: hidden !important;
       background: #f5f7fa;
-      transition: all 0.25s ease;
     }
 
     body {
       margin: 0;
+      padding: 24px 16px;
       background: linear-gradient(180deg, #f5f7fa 0%, #eaf2fb 100%);
-      display: block;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100dvh;
-      padding: 60px 16px 40px;
     }
 
     .container {
       width: 100%;
       max-width: 420px;
-      margin: 0 auto;
+      margin-top: clamp(10px, 5vh, 40px);
       padding: 0 16px;
-      transition: transform 0.3s ease;
     }
 
     @media (max-width: 480px) {
@@ -56,7 +55,6 @@
       border-radius: 20px;
       padding: 28px 24px;
       text-align: center;
-      position: relative;
       
       box-shadow: 
         0 10px 30px rgba(10, 61, 98, 0.08),
@@ -69,11 +67,11 @@
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(10px) scale(0.98);
+        transform: translateY(10px);
       }
       to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
       }
     }
 
@@ -102,7 +100,6 @@
       letter-spacing: 3px;
       font-weight: 600;
       touch-action: manipulation;
-      transition: all 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
     }
 
     input:focus {
@@ -188,52 +185,6 @@
     .dot:nth-child(3) {
       animation-delay: 0.4s;
     }
-
-    .uid-ghost {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(0);
-      z-index: 10;
-    }
-
-    .uid-ghost.show {
-      opacity: 1;
-    }
-
-    .uid-ghost span {
-      display: inline-block;
-      font-weight: 700;
-      letter-spacing: 3px;
-      color: #0A3D62;
-      animation: crumble 850ms ease forwards;
-    }
-
-    @keyframes crumble {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-        filter: blur(0);
-      }
-      35% {
-        transform: translateY(-4px) scale(1.03);
-      }
-      70% {
-        transform: translateY(16px) rotate(var(--r)) scale(0.85);
-        opacity: 0.5;
-        filter: blur(1px);
-      }
-      100% {
-        transform: translateY(28px) rotate(var(--r)) scale(0.15);
-        opacity: 0;
-        filter: blur(4px);
-      }
-    }
-
 
     @keyframes pulse {
       0% {
@@ -360,10 +311,6 @@
       to { opacity: 1; }
     }
 
-    body.input-active .container {
-      transform: translateY(-80px);
-    }
-
   </style>
 </head>
 
@@ -385,7 +332,6 @@
       spellcheck="false" 
       oninput="formatCode(this)">
       
-      <div id="uidGhost" class="uid-ghost" aria-hidden="true"></div>
     
     <input type="text" id="trap" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;">
 
@@ -456,24 +402,12 @@ async function submitForm() {
   const input = document.getElementById("code");
   const msg = document.getElementById("msg");
 
-  const sound = document.getElementById("successSound");
-  if (sound) {
-    sound.play().then(() => {
-      sound.pause();
-      sound.currentTime = 0;
-    }).catch(() => {});
-  }
-
   if (btn.disabled || isSubmitting) return;
   isSubmitting = true;
   btn.disabled = true;
 
   const code = input.value.replace(/\s/g, "").toUpperCase();
   input.blur();
-
-  document.body.classList.remove("input-active");
-  
-  document.body.classList.remove("keyboard-open");
 
   // Validation
   if (!validate(code)) {
@@ -567,6 +501,7 @@ async function submitForm() {
     // Always re-enable button & reset submitting flag
     isSubmitting = false;
     btn.disabled = false;
+    input.focus();
   }
 }
 
@@ -580,48 +515,6 @@ async function fetchWithTimeout(url, timeout = 7000) {
   } finally {
     clearTimeout(id);
   }
-}
-
-
-function resetVerificationUI() {
-  const card = document.querySelector(".card");
-  const ghost = document.getElementById("uidGhost");
-  const input = document.getElementById("code");
-  const msg = document.getElementById("msg");
-  const btn = document.getElementById("submitBtn");
-
-  document.body.classList.remove("input-active", "keyboard-open");
-
-  if (card) {
-    card.classList.remove("successing");
-    card.style.opacity = "1";
-    card.style.transform = "scale(1)";
-  }
-
-  if (ghost) {
-    ghost.classList.remove("show");
-    ghost.innerHTML = "";
-  }
-
-  if (input) {
-    input.value = "";
-    input.classList.remove("error");
-
-    // restore visual state
-    input.style.opacity = "1";
-    input.style.transform = "scale(1)";
-  }
-
-  if (msg) {
-    msg.className = "";
-    msg.innerHTML = "";
-  }
-
-  if (btn) {
-    btn.disabled = false;
-  }
-
-  isSubmitting = false;
 }
 
 
@@ -661,43 +554,35 @@ function handleResponse(res) {
   // SUCCESS BLOCK (mobile-safe)
   if (res.status === "SUCCESS") {
 
-    const uid = document.getElementById("code").value.replace(/\s/g, "").toUpperCase();
-    const card = document.querySelector(".card");
-    const ghost = document.getElementById("uidGhost");
-    const input = document.getElementById("code");
-    const btn = document.getElementById("submitBtn");
-
-    input.blur();
+    const msg = document.getElementById("msg");
+    
+    // play ding sound
+    const sound = document.getElementById("successSound");
+    if (sound) sound.play().catch(e => console.log("Sound play blocked:", e));
+    
     btn.disabled = true;
 
-    document.body.classList.remove("input-active", "keyboard-open");
+    // 📳 vibration (mobile only)
+    if (navigator.vibrate) {
+      navigator.vibrate(120);
+    }
 
-    // 1. freeze input visually
-    input.style.opacity = "0.3";
-    input.style.transform = "scale(0.98)";
-    input.style.transition = "all 0.2s ease";
+    msg.className = "";
 
-    // 2. create crumble text
-    ghost.innerHTML = uid.split("").map(ch =>
-      `<span style="--r:${(Math.random() * 24 - 12).toFixed(1)}deg">${ch}</span>`
-    ).join("");
+    msg.innerHTML = `
+      <div class="success-animation">
+        <div class="checkmark-circle">
+          <div class="checkmark"></div>
+        </div>
+        <div class="success-text">Verified</div>
+      </div>
+    `;
 
-    ghost.classList.add("show");
-
-    // 3. fade card slightly (IMPORTANT UX)
-    card.style.transition = "all 0.25s ease";
-    card.style.opacity = "0.92";
-    card.style.transform = "scale(0.98)";
-
-    // 4. redirect timing (DO NOT MOVE THIS EARLY)
+    // wait for animation, then redirect
     setTimeout(() => {
       window.location.replace(res.url);
-    }, 900);
-
-    // 5. HARD SAFETY CLEANUP (if user comes back)
-    setTimeout(() => {
-      resetVerificationUI();
-    }, 1800);
+      btn.disabled = false;
+    }, 1200);
 
     return;
   }
@@ -749,13 +634,6 @@ function formatCode(input) {
   }
 
 }
-
-
-window.addEventListener("pagehide", resetVerificationUI);
-window.addEventListener("pageshow", (e) => {
-  if (e.persisted) resetVerificationUI();
-});
-window.addEventListener("load", resetVerificationUI);
 
 
 </script>
