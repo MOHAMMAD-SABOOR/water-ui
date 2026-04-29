@@ -362,6 +362,7 @@ window.onerror = function(msg, url, line, col, error) {
 };
 
 let isSubmitting = false;
+let isSuccessFlow = false;
 
 // =======================
 // VALIDATION
@@ -403,11 +404,13 @@ async function submitForm() {
   const msg = document.getElementById("msg");
 
   if (btn.disabled || isSubmitting) return;
+  isSuccessFlow = false;
   isSubmitting = true;
   btn.disabled = true;
 
   const code = input.value.replace(/\s/g, "").toUpperCase();
   input.blur();
+  document.activeElement.blur();
 
   // Validation
   if (!validate(code)) {
@@ -498,7 +501,7 @@ async function submitForm() {
 
     console.error("Submit error:", err);
   } finally {
-    // Always re-enable button & reset submitting flag
+  if (!isSuccessFlow) {
     isSubmitting = false;
     btn.disabled = false;
   }
@@ -552,6 +555,7 @@ function handleResponse(res) {
 
   // SUCCESS BLOCK (mobile-safe)
   if (res.status === "SUCCESS") {
+    isSuccessFlow = true;
 
     const msg = document.getElementById("msg");
     
