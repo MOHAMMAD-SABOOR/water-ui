@@ -403,14 +403,23 @@ async function submitForm() {
   const input = document.getElementById("code");
   const msg = document.getElementById("msg");
 
+  // unlock sound FIRST (user interaction)
+const sound = document.getElementById("successSound");
+if (sound) {
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+    }).catch(() => {});
+  }
+
   if (btn.disabled || isSubmitting) return;
+
   isSuccessFlow = false;
   isSubmitting = true;
   btn.disabled = true;
 
   const code = input.value.replace(/\s/g, "").toUpperCase();
   input.blur();
-  document.activeElement.blur();
 
   // Validation
   if (!validate(code)) {
@@ -555,6 +564,7 @@ function handleResponse(res) {
 
   // SUCCESS BLOCK (mobile-safe)
   if (res.status === "SUCCESS") {
+    document.getElementById("code").blur();
     isSuccessFlow = true;
 
     const msg = document.getElementById("msg");
@@ -584,7 +594,6 @@ function handleResponse(res) {
     // wait for animation, then redirect
     setTimeout(() => {
       window.location.replace(res.url);
-      btn.disabled = false;
     }, 1200);
 
     return;
@@ -639,6 +648,30 @@ function formatCode(input) {
 
 }
 
+function bringCardIntoView() {
+  const card = document.querySelector(".card");
+
+  const rect = card.getBoundingClientRect();
+  const isVisible = rect.top >= 20 && rect.bottom <= window.innerHeight;
+
+  if (!isVisible) {
+    card.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}
+
+const inputField = document.getElementById("code");
+
+inputField.addEventListener("focus", () => {
+  document.body.classList.add("input-active");
+  bringCardIntoView();
+});
+
+inputField.addEventListener("blur", () => {
+  document.body.classList.remove("input-active");
+});
 
 </script>
 
