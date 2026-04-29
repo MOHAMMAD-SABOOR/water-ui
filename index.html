@@ -9,7 +9,696 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
+    html {
+      font-size: 16px;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow-x: hidden !important;
+      background: #f5f7fa;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: linear-gradient(180deg, #f5f7fa 0%, #eaf2fb 100%);
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100dvh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      margin-top: clamp(10px, 5vh, 40px);
+      padding: 0 16px;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        border-radius: 16px;
+      }
+      .container {
+        max-width: 100%;
+        padding: 0 16px;
+      }
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 24px;
+      text-align: center;
+      
+      box-shadow: 
+        0 10px 30px rgba(10, 61, 98, 0.08),
+        0 0 0 1px rgba(60, 145, 230, 0.05);
+
+      animation: fadeIn 0.4s ease;
+    }
+
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: #0A3D62;
+    }
+
+    p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1.5px solid #CFE3FF;
+      font-size: 16px;
+      margin-bottom: 25px;
+      outline: none;
+      transition: 0.2s;
+      text-align: center;
+      letter-spacing: 3px;
+      font-weight: 600;
+      touch-action: manipulation;
+    }
+
+    input:focus {
+      border-color: #3C91E6;
+      box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.15);
+    }
+
+    input.error {
+      border-color: red;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #0A3D62, #3C91E6);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(10, 61, 98, 0.25);
+      margin-bottom: 10px;
+      touch-action: manipulation;
+    }
+
+    button:active {
+      transform: scale(0.98);
+      box-shadow: 0 3px 8px rgba(10, 61, 98, 0.2);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: green;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    .footer {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .premium-loader {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px; /* adds space below the button */
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3C91E6;
+      opacity: 0.3;
+      animation: pulse 1.2s infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.4);
+        opacity: 0.5;
+      }
+      50% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+      }
+    }
+
+    @media (max-width: 360px) {
+      h1 {
+        font-size: 20px; /* smaller title for tiny screens */
+      }
+
+      p {
+        font-size: 13px;
+      }
+
+      input, button {
+        padding: 12px;
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+  
+      .premium-loader span {
+        font-size: 13px;
+      }
+
+    } 
+
+    /* ✅ SUCCESS ANIMATION */
+
+    .success-animation {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .checkmark-circle {
+      position: relative; /* IMPORTANT */
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #28a745;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pop 0.4s ease, glowPulse 1.5s infinite;
+      overflow: visible;
+      box-shadow: 0 0 12px rgba(40, 167, 69, 0.6),
+                  0 0 24px rgba(40, 167, 69, 0.4);
+    }
+
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 8px rgba(40,167,69,0.5); }
+      50% { box-shadow: 0 0 20px rgba(40,167,69,0.8); }
+      100% { box-shadow: 0 0 8px rgba(40,167,69,0.5); }
+    }
+
+    /* 🔥 RIPPLE EFFECT */
+
+    .checkmark-circle::before,
+    .checkmark-circle::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(40, 167, 69, 0.4);
+      animation: ripple 1.5s infinite;
+      z-index: -1;
+    }
+
+    .checkmark-circle::after {
+      animation-delay: 0.75s;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      70% {
+        transform: scale(1.8);
+        opacity: 0;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .checkmark {
+      width: 20px;
+      height: 10px;
+      border-left: 3px solid white;
+      border-bottom: 3px solid white;
+      transform: rotate(-45deg);
+      animation: draw 0.3s ease 0.2s forwards;
+      opacity: 0;
+    }
+
+    .success-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: #28a745;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      80% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes draw {
+      to { opacity: 1; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+    <audio id="successSound" src="https://assets.codepen.io/3/success.mp3" preload="auto"></audio>  
+
+      <div class="container">
+        <div class="card">
+
+    <h1>KNOW YOUR WATER</h1>
+    <p>Enter your 8-digit code</p>
+
+    <input 
+      id="code" 
+      maxlength="9" 
+      placeholder="XXXX XXXX" 
+      autofocus 
+      spellcheck="false" 
+      oninput="formatCode(this)">
+      
+    
+    <input type="text" id="trap" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;">
+
+    <button id="submitBtn" onclick="submitForm()">View Lab Report</button>
+
+    <div id="msg"></div>
+
+    <div class="footer">
+      Water Quality Verification System
+    </div>
+
+        </div>
+      </div>
+    
+<script>
+
+
+window.onerror = function(msg, url, line, col, error) {
+  const errorDiv = document.createElement('div');
+  errorDiv.style.padding = '20px';
+  errorDiv.style.fontFamily = 'sans-serif';
+  errorDiv.innerHTML = `
+    <h3>JS Error</h3>
+    <p><b>Message:</b> ${msg}</p>
+    <p><b>Line:</b> ${line}</p>
+  `;
+  document.body.prepend(errorDiv); // insert at top instead of replacing whole body
+};
+
+let isSubmitting = false;
+let isSuccessFlow = false;
+
+// =======================
+// VALIDATION
+// =======================
+
+function validate(code) {
+  const input = document.getElementById("code");
+
+  if (!code || code.length !== 8) {
+    input.classList.add("error");   // ADD THIS
+    showMessage("Enter a valid 8-character code");
+    input.focus();
+    return false;
+  }
+
+  input.classList.remove("error"); // ADD THIS
+  return true;
+}
+
+// =======================
+// MESSAGE
+// =======================
+
+function showMessage(text, isError = true) {
+  const msg = document.getElementById("msg");
+  msg.className = isError ? "error" : "success";
+  msg.innerHTML = text;
+}
+
+
+
+// =======================
+// SUBMIT
+// =======================
+
+async function submitForm() {
+  const btn = document.getElementById("submitBtn");
+  const input = document.getElementById("code");
+  const msg = document.getElementById("msg");
+
+  // unlock sound FIRST (user interaction)
+const sound = document.getElementById("successSound");
+if (sound) {
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+    }).catch(() => {});
+  }
+
+  if (btn.disabled || isSubmitting) return;
+
+  isSuccessFlow = false;
+  isSubmitting = true;
+  btn.disabled = true;
+
+  const code = input.value.replace(/\s/g, "").toUpperCase();
+  input.blur();
+
+  // Validation
+  if (!validate(code)) {
+    isSubmitting = false;
+    btn.disabled = false;
+    return;
+  }
+
+  // Show loader
+  msg.className = "";
+  msg.innerHTML = `
+    <div class="premium-loader">
+      <span>Verifying</span>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  `;
+
+  const API_URL = "https://d5iz7dzov2.execute-api.us-east-1.amazonaws.com/prod/get-report";
+
+  try {
+    // STEP 1: Get token
+    const trap = document.getElementById("trap").value;
+    const response1 = await fetchWithTimeout(`${API_URL}?uid=${code}&trap=${trap}`, 7000);
+      const data1 = await response1.json();
+
+      if (!response1.ok) {
+        handleResponse(data1);
+        return;
+      }
+
+    if (data1.status !== "SUCCESS") {
+      handleResponse(data1);
+      isSubmitting = false;
+      btn.disabled = false;
+      input.focus();
+      return;
+    }
+
+    // STEP 2: Get signed PDF URL
+    const response2 = await fetchWithTimeout(`${API_URL}?token=${data1.token}`, 7000);
+
+    console.log("STEP 2 STATUS:", response2.status);
+
+    // 🔥 read raw first (prevents crash)
+    const raw2 = await response2.text();
+    console.log("RAW STEP 2:", raw2);
+
+    let data2;
+    try {
+      data2 = JSON.parse(raw2);
+    } catch (e) {
+      console.error("JSON parse failed:", e);
+      showMessage("Invalid server response");
+      return;
+    }
+
+    console.log("PARSED STEP 2:", data2);
+
+    // handle non-200
+    if (!response2.ok) {
+      handleResponse(data2);
+      return;
+    }
+
+    // 🔥 SAFETY CHECK (VERY IMPORTANT)
+    if (!data2.url) {
+      console.error("Missing URL in response:", data2);
+      showMessage("Session failed. Please try again.");
+      return;
+    }
+
+    handleResponse(data2);
+
+  } catch (err) {
+    msg.className = "error";
+
+    if (err.name === "AbortError") {
+  msg.innerHTML = "Request timed out. Please try again.";
+} else if (err.message === "UID_REQUEST_FAILED") {
+  msg.innerHTML = "Invalid code or server error.";
+} else if (err.message === "TOKEN_REQUEST_FAILED") {
+  msg.innerHTML = "Session failed. Please try again.";
+} else {
+  msg.innerHTML = "Network error. Please check your connection.";
+}
+
+    console.error("Submit error:", err);
+  } finally {
+  if (!isSuccessFlow) {
+    isSubmitting = false;
+    btn.disabled = false;
+  }
+}
+}
+
+// Helper: fetch with timeout
+async function fetchWithTimeout(url, timeout = 7000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+
+// =======================
+// RESPONSE
+// =======================
+
+function handleResponse(res) {
+
+  isSubmitting = false;
+  const btn = document.getElementById("submitBtn");
+
+  if (!res) {
+    showMessage("Please try again in a moment");
+    btn.disabled = false;
+    return;
+  }
+
+  if (res.status === "SYSTEM_BUSY") {
+    btn.disabled = false;
+    showMessage("High demand right now. Please try again in a few minutes.");
+    return;
+  }
+
+  if (res.status === "UID_RATE_LIMIT") {
+    btn.disabled = false;
+    showMessage("This code has been checked too many times. Please try again later.");
+    return;
+  }
+
+  if (res.status === "NOT_FOUND") {
+    btn.disabled = false;
+    showMessage("Code not found");
+    return;
+  }
+
+  // SUCCESS BLOCK (mobile-safe)
+  if (res.status === "SUCCESS") {
+    document.getElementById("code").blur();
+    isSuccessFlow = true;
+
+    const msg = document.getElementById("msg");
+    
+    // play ding sound
+    const sound = document.getElementById("successSound");
+    if (sound) sound.play().catch(e => console.log("Sound play blocked:", e));
+    
+    btn.disabled = true;
+
+    // 📳 vibration (mobile only)
+    if (navigator.vibrate) {
+      navigator.vibrate(120);
+    }
+
+    msg.className = "";
+
+    msg.innerHTML = `
+      <div class="success-animation">
+        <div class="checkmark-circle">
+          <div class="checkmark"></div>
+        </div>
+        <div class="success-text">Verified</div>
+      </div>
+    `;
+
+    // wait for animation, then redirect
+    setTimeout(() => {
+      window.location.replace(res.url);
+    }, 1200);
+
+    return;
+  }
+
+  if (res.status === "INVALID") {
+    btn.disabled = false;
+    showMessage("Enter a valid 8-character code");
+    document.getElementById("code").focus();
+    return;
+  }
+
+  if (res.status === "EXPIRED") {
+    btn.disabled = false;
+    showMessage("Session expired. Please scan again.");
+    return;
+  }
+
+  if (res.status === "ERROR") {
+    btn.disabled = false;
+    showMessage("Please try again in a moment");
+    return;
+  }
+}
+
+function formatCode(input) {
+
+  let value = input.value.toUpperCase();
+
+  // ❌ remove everything except allowed chars
+  value = value.replace(/[^ABCDEFGHJKMNPQRSTUVWXYZ23456789]/g, "");
+
+  // ✅ limit to 8 characters ONLY
+  value = value.substring(0, 8);
+
+  // ✅ add space after 4 chars
+  if (value.length > 4) {
+    value = value.substring(0, 4) + " " + value.substring(4);
+  }
+
+  input.value = value;
+
+  // remove error style
+  input.classList.remove("error");
+
+  const btn = document.getElementById("submitBtn");
+
+  // only enable if not submitting
+  if (!isSubmitting) {
+    btn.disabled = false;
+  }
+
+}
+
+function bringCardIntoView() {
+  const card = document.querySelector(".card");
+
+  const rect = card.getBoundingClientRect();
+  const isVisible = rect.top >= 20 && rect.bottom <= window.innerHeight;
+
+  if (!isVisible) {
+    card.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest"
+    });
+  }
+}
+
+const inputField = document.getElementById("code");
+
+inputField.addEventListener("focus", () => {
+  document.body.classList.add("input-active");
+
+  setTimeout(() => {
+    bringCardIntoView();
+  }, 350);
+});
+
+inputField.addEventListener("blur", () => {
+  document.body.classList.remove("input-active");
+});
+
+window.addEventListener("resize", () => {
+  if (document.activeElement === inputField) {
+    bringCardIntoView();
+  }
+});
+
+</script>
+
+</body>
+</html>
     html {
       font-size: 16px;
       scroll-behavior: smooth;
