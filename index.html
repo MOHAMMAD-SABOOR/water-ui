@@ -501,7 +501,6 @@ async function submitForm() {
     // Always re-enable button & reset submitting flag
     isSubmitting = false;
     btn.disabled = false;
-    input.focus();
   }
 }
 
@@ -590,6 +589,7 @@ function handleResponse(res) {
   if (res.status === "INVALID") {
     btn.disabled = false;
     showMessage("Enter a valid 8-character code");
+    document.getElementById("code").focus();
     return;
   }
 
