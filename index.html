@@ -375,6 +375,7 @@ window.onerror = function(msg, url, line, col, error) {
 };
 
 let isSubmitting = false;
+let isSuccessFlow = false;
 
 // =======================
 // VALIDATION
@@ -424,6 +425,7 @@ async function submitForm() {
   }
 
   if (btn.disabled || isSubmitting) return;
+  isSuccessFlow = false;
   isSubmitting = true;
   btn.disabled = true;
 
@@ -578,6 +580,7 @@ function handleResponse(res) {
   // SUCCESS BLOCK (mobile-safe)
   if (res.status === "SUCCESS") {
 
+    isSuccessFlow = true;
     document.getElementById("code").blur();
 
     const msg = document.getElementById("msg");
@@ -607,7 +610,6 @@ function handleResponse(res) {
     // wait for animation, then redirect
     setTimeout(() => {
       window.location.replace(res.url);
-      btn.disabled = false;
     }, 1200);
 
     return;
