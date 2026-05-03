@@ -382,16 +382,6 @@ const el = {
   calcium: document.getElementById("calcium"),
   magnesium: document.getElementById("magnesium")
 };
-const rows = document.querySelectorAll(".row span:last-child");
-
-// 🔥 LOADING STATE
-const metrics = document.querySelectorAll(".metric-value");
-
-// loading state
-metrics.forEach(item => {
-  el.style.opacity = "0.4";
-  el.classList.add("loading");
-});
 
 // 🔥 HELPER: SAFE NUMBER
 function safeNum(val) {
@@ -426,6 +416,15 @@ function animateValue(el, start, end, duration, suffix = "") {
 
 // 🔥 MAIN DATA HANDLING
 if (data) {
+
+// 🔥 LOADING STATE
+const metrics = document.querySelectorAll(".metric-value");
+
+// loading state
+metrics.forEach(item => {
+  item.style.opacity = "0.4";
+  item.classList.add("loading");
+});
 
   setTimeout(() => {
 
@@ -492,7 +491,7 @@ if (data) {
     setTimeout(() => {
         // remove shimmer first
         metrics.forEach(item => {
-            el.classList.remove("loading");
+            item.classList.remove("loading");
         });
 
         // slight delay → fade in
