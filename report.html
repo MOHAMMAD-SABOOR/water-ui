@@ -417,14 +417,15 @@ function animateValue(el, start, end, duration, suffix = "") {
 // 🔥 MAIN DATA HANDLING
 if (data) {
 
-// 🔥 LOADING STATE
-const metrics = document.querySelectorAll(".metric-value");
+  console.log("FINAL DATA:", data);
 
-// loading state
-metrics.forEach(item => {
-  item.style.opacity = "0.4";
-  item.classList.add("loading");
-});
+  const metrics = document.querySelectorAll(".metric-value");
+
+  // 🔥 LOADING STATE (FIXED)
+  metrics.forEach(item => {
+    item.style.opacity = "0.4";
+    item.classList.add("loading");
+  });
 
   setTimeout(() => {
 
@@ -433,33 +434,32 @@ metrics.forEach(item => {
     const tds = safeNum(data.tds);
 
     if (el.ph) {
-        if (ph !== null) animateValue(el.ph, 0, ph, 800);
-        else el.ph.innerText = "--";
+      if (ph !== null) animateValue(el.ph, 0, ph, 800);
+      else el.ph.innerText = "--";
     }
 
     if (el.tds) {
-        tds !== null
-            ? animateValue(el.tds, 0, tds, 800, "ppm")
-            : el.tds.innerText = "--";
+      tds !== null
+        ? animateValue(el.tds, 0, tds, 800, "ppm")
+        : el.tds.innerText = "--";
     }
 
     if (el.microbial) {
-        el.microbial.innerText = data.microbial || "--";
+      el.microbial.innerText = data.microbial ?? "--";
     }
-
 
     // COMPOSITION
     const hardness = safeNum(data.hardness);
     const fluoride = safeNum(data.fluoride);
 
     if (el.hardness) {
-    hardness !== null
+      hardness !== null
         ? animateValue(el.hardness, 0, hardness, 800, "mg/L")
         : el.hardness.innerText = "--";
     }
 
     if (el.fluoride) {
-    fluoride !== null
+      fluoride !== null
         ? animateValue(el.fluoride, 0, fluoride, 800, "mg/L")
         : el.fluoride.innerText = "--";
     }
@@ -469,46 +469,37 @@ metrics.forEach(item => {
     const magnesium = safeNum(data.magnesium);
 
     if (el.calcium) {
-    calcium !== null
+      calcium !== null
         ? animateValue(el.calcium, 0, calcium, 800, "mg/L")
         : el.calcium.innerText = "--";
     }
 
     if (el.magnesium) {
-    magnesium !== null
+      magnesium !== null
         ? animateValue(el.magnesium, 0, magnesium, 800, "mg/L")
         : el.magnesium.innerText = "--";
     }
 
-    // YOUR BOTTLE
-    document.querySelector("#uid").innerText = data.uid || "--";
-    document.querySelector("#packedOn").innerText = data.packedOn || "--";
-    document.querySelector("#expiry").innerText = data.expiry || "--";
-    document.querySelector("#verifiedOn").innerText = data.verifiedOn || "--";
+    // BOTTLE INFO
+    document.querySelector("#uid").innerText = data.uid ?? "--";
+    document.querySelector("#packedOn").innerText = data.packedOn ?? "--";
+    document.querySelector("#expiry").innerText = data.expiry ?? "--";
+    document.querySelector("#verifiedOn").innerText = data.verifiedOn ?? "--";
 
-
-    // 🔥 REMOVE LOADING (slight delay = smoother UX)
+    // 🔥 REMOVE LOADING
     setTimeout(() => {
-        // remove shimmer first
-        metrics.forEach(item => {
-            item.classList.remove("loading");
-        });
 
-        // slight delay → fade in
-        setTimeout(() => {
-            metrics.forEach(item => {
-            el.style.opacity = "1";
-            });
-        }, 50);
+      metrics.forEach(item => {
+        item.classList.remove("loading");
+        item.style.opacity = "1";
+      });
 
     }, 200);
 
   }, 300);
 
 } else {
-  console.warn("No session data — redirecting");
-  window.location.href = "index.html";
-  return;
+  console.error("NO DATA FOUND IN SESSION");
 }
 
 
