@@ -503,6 +503,8 @@ async function submitForm() {
     if (!data2.url) {
       console.error("Missing URL in response:", data2);
       showMessage("Session failed. Please try again.");
+      isSubmitting = false;
+      btn.disabled = false;
       return;
     }
 
@@ -608,8 +610,17 @@ function handleResponse(res) {
     `;
 
     // wait for animation, then redirect
+    // store data
+    sessionStorage.removeItem("reportData");
+    sessionStorage.removeItem("pdfUrl");
+    
+    sessionStorage.setItem("reportData", JSON.stringify(res.data));
+    sessionStorage.setItem("pdfUrl", res.url);
+    sessionStorage.setItem("sessionTime", Date.now());
+
+    // redirect to report page (NOT PDF)
     setTimeout(() => {
-      window.location.replace(res.url);
+      window.location.href = "report.html";
     }, 1200);
 
     return;
