@@ -246,19 +246,19 @@ body {
 
     <div class="metrics">
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="ph" class="metric-value">--</div>
         <div class="metric-ref">6.5–8.5</div>
         <div class="metric-label">pH</div>
       </div>
 
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="tds" class="metric-value">--</div>
         <div class="metric-ref">50–150</div>
         <div class="metric-label">TDS</div>
       </div>
 
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="microbial" class="metric-value">--</div>
         <div class="metric-ref">0</div>
         <div class="metric-label">Microbial</div>
       </div>
@@ -275,13 +275,13 @@ body {
 
     <div class="grid-2">
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="hardness" class="metric-value">--</div>
         <div class="metric-ref">&lt; 200</div>
         <div class="metric-label">Hardness</div>
       </div>
 
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="fluoride" class="metric-value">--</div>
         <div class="metric-ref">0.5–1.0</div>
         <div class="metric-label">Fluoride</div>
       </div>
@@ -294,13 +294,13 @@ body {
 
     <div class="grid-2">
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="calcium" class="metric-value">--</div>
         <div class="metric-ref">20–75</div>
         <div class="metric-label">Calcium</div>
       </div>
 
       <div class="metric">
-        <div class="metric-value">--</div>
+        <div id="magnesium" class="metric-value">--</div>
         <div class="metric-ref">10–50</div>
         <div class="metric-label">Magnesium</div>
       </div>
@@ -312,18 +312,18 @@ body {
     <div class="section-title">YOUR BOTTLE</div>
 
     <!-- Identity -->
-    <div class="row"><span>Bottle ID</span><span>CX240426A</span></div>
+    <div class="row"><span>Bottle ID</span><span id="uid">--</span></div>
 
     <div class="divider"></div>
 
     <!-- Lifecycle -->
-    <div class="row"><span>Packed On</span><span>25 Apr 2026</span></div>
-    <div class="row"><span>Fresh Till</span><span>24 Apr 2027</span></div>
+    <div class="row"><span>Packed On</span><span id="packedOn">--</span></div>
+    <div class="row"><span>Fresh Till</span><span id="expiry">--</span></div>
 
     <div class="divider"></div>
 
     <!-- Trust -->
-    <div class="row"><span>Quality Verified</span><span>26 Apr 2026</span></div>
+    <div class="row"><span>Quality Verified</span><span id="verifiedOn">--</span></div>
   </div>
 
   <!-- DOWNLOAD -->
@@ -346,8 +346,19 @@ body {
 
 <script>
 
-if (!sessionStorage.getItem("pdfUrl")) {
+const SESSION_LIMIT = 3 * 60 * 1000; // 3 minutes
+
+const createdAt = sessionStorage.getItem("sessionTime");
+
+if (!sessionStorage.getItem("pdfUrl") || !createdAt) {
   window.location.href = "index.html";
+} else {
+  const now = Date.now();
+
+  if (now - parseInt(createdAt) > SESSION_LIMIT) {
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
 }
 
 // 🔥 SAFE DATA FETCH
@@ -362,11 +373,22 @@ try {
 }
 
 // 🔥 ELEMENTS (ONLY ONCE)
-const metrics = document.querySelectorAll(".metric-value");
+const el = {
+  ph: document.getElementById("ph"),
+  tds: document.getElementById("tds"),
+  microbial: document.getElementById("microbial"),
+  hardness: document.getElementById("hardness"),
+  fluoride: document.getElementById("fluoride"),
+  calcium: document.getElementById("calcium"),
+  magnesium: document.getElementById("magnesium")
+};
 const rows = document.querySelectorAll(".row span:last-child");
 
 // 🔥 LOADING STATE
-metrics.forEach(el => {
+const metrics = document.querySelectorAll(".metric-value");
+
+// loading state
+metrics.forEach(item => {
   el.style.opacity = "0.4";
   el.classList.add("loading");
 });
@@ -411,78 +433,71 @@ if (data) {
     const ph = safeNum(data.ph);
     const tds = safeNum(data.tds);
 
-    if (metrics[0]) {
-        if (ph !== null) {
-            animateValue(metrics[0], 0, ph, 800);
-        } else {
-            metrics[0].innerText = "--";
-        }
+    if (el.ph) {
+        if (ph !== null) animateValue(el.ph, 0, ph, 800);
+        else el.ph.innerText = "--";
     }
 
-    if (metrics[1]) {
+    if (el.tds) {
         tds !== null
-            ? animateValue(metrics[1], 0, tds, 800, "ppm")
-            : metrics[1].innerText = "--";
-        }
+            ? animateValue(el.tds, 0, tds, 800, "ppm")
+            : el.tds.innerText = "--";
+    }
 
-        if (metrics[2]) {
-            const m = data.microbial;
-            metrics[2].innerText =
-                (m !== undefined && m !== null && m.toString().trim() !== "")
-                    ? m
-                    : "--";
-        }
+    if (el.microbial) {
+        el.microbial.innerText = data.microbial || "--";
+    }
 
 
     // COMPOSITION
     const hardness = safeNum(data.hardness);
     const fluoride = safeNum(data.fluoride);
 
-    if (metrics[3]) {
-        hardness !== null
-            ? animateValue(metrics[3], 0, hardness, 800, "mg/L")
-            : metrics[3].innerText = "--";
+    if (el.hardness) {
+    hardness !== null
+        ? animateValue(el.hardness, 0, hardness, 800, "mg/L")
+        : el.hardness.innerText = "--";
     }
 
-    if (metrics[4]) {
+    if (el.fluoride) {
     fluoride !== null
-      ? animateValue(metrics[4], 0, fluoride, 800, "mg/L")
-      : metrics[4].innerText = "--";
+        ? animateValue(el.fluoride, 0, fluoride, 800, "mg/L")
+        : el.fluoride.innerText = "--";
     }
 
     // MINERALS
     const calcium = safeNum(data.calcium);
     const magnesium = safeNum(data.magnesium);
 
-    if (metrics[5]) {
+    if (el.calcium) {
     calcium !== null
-      ? animateValue(metrics[5], 0, calcium, 800, "mg/L")
-      : metrics[5].innerText = "--";
+        ? animateValue(el.calcium, 0, calcium, 800, "mg/L")
+        : el.calcium.innerText = "--";
     }
 
-    if (metrics[6]) {
+    if (el.magnesium) {
     magnesium !== null
-      ? animateValue(metrics[6], 0, magnesium, 800, "mg/L")
-      : metrics[6].innerText = "--";
+        ? animateValue(el.magnesium, 0, magnesium, 800, "mg/L")
+        : el.magnesium.innerText = "--";
     }
 
     // YOUR BOTTLE
-    if (rows[0]) rows[0].innerText = data.uid || "--";
-    if (rows[1]) rows[1].innerText = data.packedOn || "--";
-    if (rows[2]) rows[2].innerText = data.expiry || "--";
-    if (rows[3]) rows[3].innerText = data.verifiedOn || "--";
+    document.querySelector("#uid").innerText = data.uid || "--";
+    document.querySelector("#packedOn").innerText = data.packedOn || "--";
+    document.querySelector("#expiry").innerText = data.expiry || "--";
+    document.querySelector("#verifiedOn").innerText = data.verifiedOn || "--";
 
 
     // 🔥 REMOVE LOADING (slight delay = smoother UX)
     setTimeout(() => {
         // remove shimmer first
-        metrics.forEach(el => {
+        metrics.forEach(item => {
             el.classList.remove("loading");
         });
 
         // slight delay → fade in
         setTimeout(() => {
-            metrics.forEach(el => {
+            metrics.forEach(item => {
             el.style.opacity = "1";
             });
         }, 50);
@@ -493,15 +508,8 @@ if (data) {
 
 } else {
   console.warn("No session data — redirecting");
-
   window.location.href = "index.html";
   return;
-}
-
-  metrics.forEach(el => {
-    el.classList.remove("loading");
-    el.style.opacity = "1";
-  });
 }
 
 
