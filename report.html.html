@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<style>
+:root {
+  --primary: #1f3a5f;
+  --accent: #3C91E6;
+  --success: #28a745;
+  --text-light: #888;
+  --card-bg: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f7f9fc;
+  color: var(--primary);
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 14px 14px 40px;
+}
+
+/* HEADER */
+.header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.logo {
+  height: 28px;
+  object-fit: contain;
+}
+
+.sub {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* TOP ICONS */
+.top-actions {
+  position: absolute;
+  right: 0;
+  top: 2px;
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  font-size: 18px;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
+  opacity: 1;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  margin: 14px 0 16px;
+}
+
+.status-pill {
+  display: inline-block;
+  background: rgba(40,167,69,0.08);
+  color: var(--success);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.hero-sub {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 6px;
+}
+
+/* CARD */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* subtle alternate cards */
+.card:nth-of-type(even) {
+  background: #fbfcfe;
+}
+
+.divider {
+  height: 1px;
+  background: #f5f5f5;
+  margin: 12px 0;
+}
+
+/* SECTION TITLE */
+.section-title {
+  color: #1f2d3d;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* LIVE METRICS */
+.metrics {
+  display: flex;
+  justify-content: space-between;
+}
+
+.metric {
+  text-align: center;
+  flex: 1;
+  padding: 4px 2px;
+}
+
+.metric-value {
+  font-weight: 700;
+  font-size: 18px;
+  color: #0A3D62;
+}
+
+.metric-ref {
+  font-size: 11px;
+  color: #bbb;
+  margin-top: 2px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* GRID-2 */
+.grid-2 {
+  display: flex;
+  gap: 10px;
+}
+
+.grid-2 .metric {
+  flex: 1;
+}
+
+.metric-value.loading {
+  background: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  color: transparent;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ROW */
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+/* BUTTON */
+.download-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.download-btn:active {
+  transform: scale(0.97);
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+/* ANIMATION */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="top-actions">
+      <div class="icon-btn" id="topDownload">⬇️</div>
+      <div class="icon-btn" id="shareBtn">🔗</div>
+    </div>
+
+    <img src="assets/rainbell.png" class="logo">
+    <div class="sub">Tested by XYZ Labs</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="status-pill">✔ Safe for Drinking</div>
+    <div class="hero-sub">This exact bottle has been tested & verified</div>
+  </div>
+
+  <!-- LIVE -->
+  <div class="card">
+    <div class="section-title">LIVE QUALITY</div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">6.5–8.5</div>
+        <div class="metric-label">pH</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">50–150</div>
+        <div class="metric-label">TDS</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">0</div>
+        <div class="metric-label">Microbial</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:#777;margin-top:8px;text-align:center;">
+      Continuously monitored during production
+    </div>
+  </div>
+
+  <!-- COMPOSITION -->
+  <div class="card">
+    <div class="section-title">COMPOSITION</div>
+
+    <div class="grid-2">
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">&lt; 200</div>
+        <div class="metric-label">Hardness</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">0.5–1.0</div>
+        <div class="metric-label">Fluoride</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINERALS -->
+  <div class="card">
+    <div class="section-title">MINERAL PROFILE</div>
+
+    <div class="grid-2">
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">20–75</div>
+        <div class="metric-label">Calcium</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-value">--</div>
+        <div class="metric-ref">10–50</div>
+        <div class="metric-label">Magnesium</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YOUR BOTTLE -->
+  <div class="card">
+    <div class="section-title">YOUR BOTTLE</div>
+
+    <!-- Identity -->
+    <div class="row"><span>Bottle ID</span><span>CX240426A</span></div>
+
+    <div class="divider"></div>
+
+    <!-- Lifecycle -->
+    <div class="row"><span>Packed On</span><span>25 Apr 2026</span></div>
+    <div class="row"><span>Fresh Till</span><span>24 Apr 2027</span></div>
+
+    <div class="divider"></div>
+
+    <!-- Trust -->
+    <div class="row"><span>Quality Verified</span><span>26 Apr 2026</span></div>
+  </div>
+
+  <!-- DOWNLOAD -->
+  <div class="card">
+    <button id="downloadBtn" class="download-btn">
+      Download Full Lab Report
+    </button>
+
+    <div style="font-size:11px;color:#777;text-align:center;margin-top:8px;">
+      NABL Accredited Lab • Full safety panel available
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Know what you drink. Every batch. Every time.
+  </div>
+
+</div>
+
+<script>
+
+if (!sessionStorage.getItem("pdfUrl")) {
+  window.location.href = "index.html";
+}
+
+// 🔥 SAFE DATA FETCH
+let data = null;
+try {
+  const raw = sessionStorage.getItem("reportData");
+  if (raw && raw !== "undefined") {
+    data = JSON.parse(raw);
+  }
+} catch (e) {
+  console.warn("Invalid session data");
+}
+
+// 🔥 ELEMENTS (ONLY ONCE)
+const metrics = document.querySelectorAll(".metric-value");
+const rows = document.querySelectorAll(".row span:last-child");
+
+// 🔥 LOADING STATE
+metrics.forEach(el => {
+  el.style.opacity = "0.4";
+  el.classList.add("loading");
+});
+
+// 🔥 HELPER: SAFE NUMBER
+function safeNum(val) {
+  const num = parseFloat(val);
+  return isNaN(num) ? null : num;
+}
+
+// 🔥 VALUE ANIMATION
+function animateValue(el, start, end, duration, suffix = "") {
+  let startTime = null;
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    let progress = Math.min((timestamp - startTime) / duration, 1);
+
+    // smooth ease-out
+    progress = 1 - Math.pow(1 - progress, 3);
+
+    const value = start + (end - start) * progress;
+
+    if (suffix.includes("ppm") || suffix.includes("mg")) {
+      el.innerText = Math.round(value) + " " + suffix;
+    } else {
+      el.innerText = value.toFixed(1);
+    }
+
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+// 🔥 MAIN DATA HANDLING
+if (data) {
+
+  setTimeout(() => {
+
+    // LIVE
+    const ph = safeNum(data.ph);
+    const tds = safeNum(data.tds);
+
+    if (metrics[0]) {
+        if (ph !== null) {
+            animateValue(metrics[0], 0, ph, 800);
+        } else {
+            metrics[0].innerText = "--";
+        }
+    }
+
+    if (metrics[1]) {
+        tds !== null
+            ? animateValue(metrics[1], 0, tds, 800, "ppm")
+            : metrics[1].innerText = "--";
+        }
+
+        if (metrics[2]) {
+            const m = data.microbial;
+            metrics[2].innerText =
+                (m !== undefined && m !== null && m.toString().trim() !== "")
+                    ? m
+                    : "--";
+        }
+
+
+    // COMPOSITION
+    const hardness = safeNum(data.hardness);
+    const fluoride = safeNum(data.fluoride);
+
+    if (metrics[3]) {
+        hardness !== null
+            ? animateValue(metrics[3], 0, hardness, 800, "mg/L")
+            : metrics[3].innerText = "--";
+    }
+
+    if (metrics[4]) {
+    fluoride !== null
+      ? animateValue(metrics[4], 0, fluoride, 800, "mg/L")
+      : metrics[4].innerText = "--";
+    }
+
+    // MINERALS
+    const calcium = safeNum(data.calcium);
+    const magnesium = safeNum(data.magnesium);
+
+    if (metrics[5]) {
+    calcium !== null
+      ? animateValue(metrics[5], 0, calcium, 800, "mg/L")
+      : metrics[5].innerText = "--";
+    }
+
+    if (metrics[6]) {
+    magnesium !== null
+      ? animateValue(metrics[6], 0, magnesium, 800, "mg/L")
+      : metrics[6].innerText = "--";
+    }
+
+    // YOUR BOTTLE
+    if (rows[0]) rows[0].innerText = data.uid || "--";
+    if (rows[1]) rows[1].innerText = data.packedOn || "--";
+    if (rows[2]) rows[2].innerText = data.expiry || "--";
+    if (rows[3]) rows[3].innerText = data.verifiedOn || "--";
+
+
+    // 🔥 REMOVE LOADING (slight delay = smoother UX)
+    setTimeout(() => {
+        // remove shimmer first
+        metrics.forEach(el => {
+            el.classList.remove("loading");
+        });
+
+        // slight delay → fade in
+        setTimeout(() => {
+            metrics.forEach(el => {
+            el.style.opacity = "1";
+            });
+        }, 50);
+
+    }, 200);
+
+  }, 300);
+
+} else {
+  console.warn("No session data — redirecting");
+
+  window.location.href = "index.html";
+  return;
+}
+
+  metrics.forEach(el => {
+    el.classList.remove("loading");
+    el.style.opacity = "1";
+  });
+}
+
+
+// 🔥 CARD ENTRY ANIMATION
+document.querySelectorAll(".card").forEach((card, i) => {
+  card.style.opacity = "0";
+  card.style.transform = "translateY(10px)";
+  card.style.transition = "0.4s ease";
+
+  setTimeout(() => {
+    card.style.opacity = "1";
+    card.style.transform = "translateY(0)";
+  }, 100 + i * 80);
+});
+
+
+// 🔽 DOWNLOAD
+function triggerDownload() {
+  const url = sessionStorage.getItem("pdfUrl");
+
+  if (!url) {
+    alert("Session expired. Please scan again.");
+    return;
+  }
+
+  window.location.href = url;
+  sessionStorage.setItem("downloaded", "true");
+  sessionStorage.removeItem("reportData");
+}
+
+document.getElementById("downloadBtn").onclick = triggerDownload;
+document.getElementById("topDownload").onclick = triggerDownload;
+
+
+// 🔗 SHARE
+document.getElementById("shareBtn").onclick = () => {
+  if (navigator.share) {
+    navigator.share({
+      title: "Water Quality Report",
+      text: "Check this verified water report",
+      url: window.location.href
+    });
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Link copied");
+  }
+};
+</script>
+
+
+</body>
+</html>
